@@ -2,6 +2,9 @@ KeyName: aws-orchestrator
 tags:
   Owner: aws-orchestrator
   Environment: test-environment
+ingress:
+  - protocol: TCP
+    port: 22
 instances:
   vm1:
     InstanceType: t2.micro

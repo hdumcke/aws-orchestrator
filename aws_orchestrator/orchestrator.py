@@ -95,12 +95,13 @@ class AWSOrchestrator:
                                                         VpcId=vpc.id
                                                         )
         self.pubSecGrp.create_tags(Tags=self.tags)
-        self.ec2Client.authorize_security_group_ingress(GroupId=self.pubSecGrp.id,
-                                                        IpProtocol='tcp',
-                                                        FromPort=22,
-                                                        ToPort=22,
-                                                        CidrIp='0.0.0.0/0'
-                                                        )
+        for rule in self.config['ingress']:
+            self.ec2Client.authorize_security_group_ingress(GroupId=self.pubSecGrp.id,
+                                                            IpProtocol=rule['protocol'],
+                                                            FromPort=int(rule['port']),
+                                                            ToPort=int(rule['port']),
+                                                            CidrIp='0.0.0.0/0'
+                                                            )
 
         self.pubsubnet = vpc.create_subnet(CidrBlock='10.240.1.0/24')
         self.pubsubnet.create_tags(Tags=self.tags)
@@ -167,7 +168,9 @@ class AWSOrchestrator:
             build_script = "%s%s" % (build_script, "EOF\n\n")
             build_script = "%s%s" % (build_script, "chmod +x /home/ubuntu/%s_run.sh\n" % vm_name)
             build_script = "%s%s" % (build_script, "sudo -H -u ubuntu bash -c 'cd /home/ubuntu; ./%s_build.sh'\n" % vm_name)
+            build_script = "%s%s" % (build_script, "touch /home/ubuntu/.build_done'\n")
             build_script = "%s%s" % (build_script, "sudo -H -u ubuntu bash -c 'cd /home/ubuntu; ./%s_run.sh'\n" % vm_name)
+            build_script = "%s%s" % (build_script, "touch /home/ubuntu/.run_done'\n")
             instanceLst.append(self.create_instance(vm_name, build_script))
 
         waiter = self.ec2Client.get_waiter('instance_running')
