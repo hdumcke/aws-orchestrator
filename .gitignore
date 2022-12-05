@@ -1,0 +1,4 @@
+.eggs/
+aws_orchestrator.egg-info
+aws_orchestrator.egg-info/
+aws_orchestrator/__pycache__

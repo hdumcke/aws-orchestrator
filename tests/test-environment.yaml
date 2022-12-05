@@ -1,0 +1,32 @@
+KeyName: aws-orchestrator
+tags:
+  Owner: aws-orchestrator
+  Environment: test-environment
+instances:
+  vm1:
+    InstanceType: t2.micro
+    AMI_ID: ami-0493936afbe820b28
+    git_repos:
+      - https://github.com/hdumcke/aws-orchestrator.git
+    build_scripts:
+      - ./aws-orchestrator/tests/build.sh
+    run_scripts:
+      - ./aws-orchestrator/tests/run.sh
+  vm2:
+    InstanceType: t2.micro
+    AMI_ID: ami-0493936afbe820b28
+    git_repos:
+      - https://github.com/hdumcke/aws-orchestrator.git
+    build_scripts:
+      - ./aws-orchestrator/tests/build.sh
+    run_scripts:
+      - ./aws-orchestrator/tests/run.sh
+  vm3:
+    InstanceType: t2.micro
+    AMI_ID: ami-0493936afbe820b28
+    git_repos:
+      - https://github.com/hdumcke/aws-orchestrator.git
+    build_scripts:
+      - ./aws-orchestrator/tests/build.sh
+    run_scripts:
+      - ./aws-orchestrator/tests/run.sh

@@ -1,0 +1,16 @@
+CHANGES
+=======
+
+* generate temporary files under Linux in ~/.cache/mpo
+* create temparary files in home directory for Linux to work around snap
+* updated README
+* write temporaty files platform independent and provide workaround when Snap can not access /tmp
+* update installation step in README
+* updated README file
+* updated README file
+* update .gitignore
+* fixed typos in README
+* allow to specify list of repos, build and run scripts
+* fixed README and removed debugging statement
+* first push
+* Initial commit

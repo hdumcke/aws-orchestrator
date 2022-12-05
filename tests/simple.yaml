@@ -1,0 +1,8 @@
+KeyName: aws-orchestrator
+tags:
+  Owner: aws-orchestrator
+  Environment: simple
+instances:
+  vm1:
+    InstanceType: t2.micro
+    AMI_ID: ami-0493936afbe820b28
