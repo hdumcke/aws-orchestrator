@@ -65,11 +65,13 @@ To customize the instance and run scripts use these optional parameters:
 git clone --depth=1 https://github.com/hdumcke/aws-orchestrator
 cd aws-orchestrator/tests
 aws-deploy simple.yaml
+aws-wait simple.yaml
 aws-list simple.yaml
 ssh .... as shown by aws-list
 exit # leave vm
 aws-destroy simple.yaml
 aws-deploy test-environment.yaml
+aws-wait test-environment.yaml
 aws-list test-environment.yaml
 ssh -o "IdentitiesOnly=yes" -i id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ubuntu@192.168.64.32 # use IP addess shown with aws-list
 ls -la # see injected build and run script, see build and run log files

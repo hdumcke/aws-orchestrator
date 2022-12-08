@@ -1,5 +1,8 @@
+import time
 import yaml
 import boto3
+from fabric import Connection
+from patchwork.files import exists
 
 
 class AWSOrchestrator:
@@ -14,7 +17,8 @@ class AWSOrchestrator:
         for key in self.config['tags'].keys():
             self.tags.append({'Key': key, 'Value': self.config['tags'][key]})
 
-    def list_ip_addesses(self):
+    def collect_ip_addesses(self):
+        result = []
         filter = []
         for key in self.config['tags'].keys():
             filter.append({'Name': 'tag:%s' % key, 'Values': [self.config['tags'][key]]})
@@ -32,7 +36,20 @@ class AWSOrchestrator:
                     for i in range(len(tags)):
                         if tags[i]['Key'] == 'VMName':
                             name = tags[i]['Value']
-                    print("%s: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ubuntu@%s" % (name, instances[k]['PublicIpAddress']))
+                    result.append({'Name': name, 'PublicIpAddress':instances[k]['PublicIpAddress']})
+        return result
+
+    def list_ip_addesses(self):
+        result = self.collect_ip_addesses()
+        for i in range(len(result)):
+            print("%s: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ubuntu@%s" % (result[i]['Name'], result[i]['PublicIpAddress']))
+
+    def wait_for_completion(self):
+        result = self.collect_ip_addesses()
+        for i in range(len(result)):
+            c = Connection(result[i]['PublicIpAddress'], port=22, user="ubuntu")
+            while not exists(c, '/home/ubuntu/.build_done'):
+                time.sleep(30)
 
     def destroy_instances(self):
         filter = []
@@ -168,7 +185,7 @@ class AWSOrchestrator:
             build_script = "%s%s" % (build_script, "EOF\n\n")
             build_script = "%s%s" % (build_script, "chmod +x /home/ubuntu/%s_run.sh\n" % vm_name)
             build_script = "%s%s" % (build_script, "sudo -H -u ubuntu bash -c 'cd /home/ubuntu; ./%s_build.sh'\n" % vm_name)
-            build_script = "%s%s" % (build_script, "touch /home/ubuntu/.build_done'\n")
+            build_script = "%s%s" % (build_script, "touch /home/ubuntu/.build_done\n")
             build_script = "%s%s" % (build_script, "sudo -H -u ubuntu bash -c 'cd /home/ubuntu; ./%s_run.sh'\n" % vm_name)
             build_script = "%s%s" % (build_script, "touch /home/ubuntu/.run_done'\n")
             instanceLst.append(self.create_instance(vm_name, build_script))

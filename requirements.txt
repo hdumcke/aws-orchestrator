@@ -1,2 +1,4 @@
 boto3
+fabric
+patchwork
 pyyaml
